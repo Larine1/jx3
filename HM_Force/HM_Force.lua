@@ -147,16 +147,25 @@ _HM_Force.UpdateOTActionBar = function()
 		_HM_Force.nActionTotal = nil
 		nFrame = 0
 	end
-	local handle = frame:Lookup("", "Handle_Common")
-	local hText = handle:Lookup("Text_Name")
-	if not handle:IsVisible() then
-		hText = frame:Lookup("", "Handle_GaiBang"):Lookup("Text_GBName")
+	local hText
+	for k, v in pairs({
+		{ "Handle_Common",  "Text_Name"       },
+		{ "Handle_GaiBang", "Text_GBName"     },
+		{ "Handle_ChangGe", "Text_ProgressCg" },
+	}) do
+		local handle = frame:Lookup("", v[1])
+		if handle and handle:IsVisible() then
+			hText = handle:Lookup(v[2])
+			break
+		end
 	end
-	local szText = string.gsub(hText:GetText(), " %(.-%)$", "")
-	if not _HM_Force.bActionDec then
-		nFrame = nTotal - nFrame
+	if hText then
+		local szText = string.gsub(hText:GetText(), " %(.-%)$", "")
+		if not _HM_Force.bActionDec then
+			nFrame = nTotal - nFrame
+		end
+		hText:SetText(szText .. string.format(" (%.2f/%.2f)", nFrame / 16, nTotal / 16))
 	end
-	hText:SetText(szText .. string.format(" (%.2f/%.2f)", nFrame / 16, nTotal / 16))
 end
 
 -- on wanted msg
@@ -188,7 +197,7 @@ _HM_Force.tPlayHorse = {
 	[60358] = true,	-- ¶ÉÇé
 	[63440] = true,	-- ð½
 	[90491] = true,	-- åë³ßÌìÑÄ
-	[90728] = true,	-- ¾í»Æ³¾ 
+	[90728] = true,	-- ¾í»Æ³¾
 }
 _HM_Force.ReplaceHorse = function()
 	-- is now a play horse
